@@ -44,7 +44,7 @@ class API():
 
             request = cherrypy.request.body.read()
 
-            result = self._dnsQuery(self._mendPadding(self._b64decode(kwargs['dns'])), cherrypy.config['dns.server'])
+            result = self._dnsQuery(self._mendPadding(request), cherrypy.config['dns.server'])
             cherrypy.log('%s: %s' % (cherrypy.request.remote.ip, dns.message.from_wire(result).question), context='DNS [POST]')
 
             cherrypy.response.headers['Content-Type'] = 'application/dns-message'
