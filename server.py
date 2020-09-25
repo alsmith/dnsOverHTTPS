@@ -84,8 +84,12 @@ class API():
                 return packet
 
             (dataLength, _, paddingLength) = struct.unpack('!HHH', packet[ptr+9:ptr+15])
+            if dataLength < 4:
+                dataLength = 4
+                packet = packet[:ptr+9] + struct.pack('!H', dataLength) + packet[ptr+11:]
+                cherrypy.log('Fixing data length for %s (%s).' % (query, dataLength), context='IOS-BUG')
             if dataLength - paddingLength != 4:
-                cherrypy.log('Fixing padding length (%s %s).' % (dataLength, paddingLength), context='IOS-BUG')
+                cherrypy.log('Fixing padding length for %s (%s %s).' % (query, dataLength, paddingLength), context='IOS-BUG')
                 packet = packet[:ptr+13] + struct.pack('!H', dataLength-4) + bytearray(dataLength-4)
 
             return packet
